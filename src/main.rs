@@ -6,10 +6,10 @@ extern crate serde_derive;
 extern crate trackable;
 
 use byte_unit::Byte;
-use ekvsb::kvs::{self, KeyValueStore};
-use ekvsb::task::{Key, Seconds, Task, TaskResult, ValueSpec};
-use ekvsb::workload::{Workload, WorkloadExecutor};
-use ekvsb::Result;
+use kvsbench::kvs::{self, KeyValueStore};
+use kvsbench::task::{Key, Seconds, Task, TaskResult, ValueSpec};
+use kvsbench::workload::{Workload, WorkloadExecutor};
+use kvsbench::Result;
 use indicatif::ProgressBar;
 use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
@@ -89,7 +89,7 @@ enum RunCommand {
 
     #[structopt(name = "crisper", about = "Crisper")]
     Crisper {
-        endpoint: &'static str,
+        endpoint: String,
     }
 }
 
@@ -492,8 +492,8 @@ fn handle_run_subcommand(opt: &Opt, command: &RunCommand) -> Result<()> {
             track!(execute(kvs, workload))?;
         }
         RunCommand::Crisper { endpoint } => {
-            // TODO: Run Crisper client
-            ()
+            let kvs = track!(kvs::CrisperKVSClient::new(endpoint))?;
+            track!(execute(kvs, workload))?;
         }
     }
     Ok(())
@@ -672,7 +672,7 @@ impl Latency {
 }
 
 fn handle_plot_subcommand(command: &PlotCommand) -> Result<()> {
-    let mut options = ekvsb::plot::PlotOptions::new();
+    let mut options = kvsbench::plot::PlotOptions::new();
 
     match command {
         PlotCommand::Text { .. } => {

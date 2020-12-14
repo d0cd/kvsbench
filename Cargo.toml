@@ -1,10 +1,10 @@
 [package]
-name = "ekvsb"
-version = "0.0.13"
-authors = ["Takeru Ohta <phjgt308@gmail.com>"]
-description = "Benchmark Tool for Embedded Key-Value Stores available in Rust"
-homepage = "https://github.com/sile/ekvsb"
-repository = "https://github.com/sile/ekvsb"
+name = "kvsbench"
+version = "0.0.1"
+authors = ["Pranav Gaddamadugu <pranavsaig@gmail.com>"]
+description = "Benchmark Tool for Key-Value Stores available in Rust"
+homepage = "https://github.com/d0cd/kvsbench"
+repository = "https://github.com/d0cd/kvsbench"
 readme = "README.md"
 keywords = ["benchmark", "embedded-database"]
 license = "MIT"
@@ -14,10 +14,12 @@ edition = "2018"
 byte-unit = "1"
 cannyls = "0.9"
 clap = "2"
+crisper = { path = "../crisper" }
 futures = "0.1"
 gnuplot = "0.0"
 indicatif = "0.11"
 percent-encoding = "1"
+prost = "0.6.0"
 rand = "0.6"
 rocksdb = "0.12.1"
 serde = "1"
@@ -27,3 +29,4 @@ siphasher = "0.3"
 sled = "0.23.0"
 structopt = "0.2"
 trackable = { version = "0.2", features = ["serialize"] }
+zmq = "0.9"
