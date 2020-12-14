@@ -86,6 +86,11 @@ enum RunCommand {
         #[structopt(long, parse(from_os_str))]
         dir: PathBuf,
     },
+
+    #[structopt(name = "crisper", about = "Crisper")]
+    Crisper {
+        endpoint: &'static str,
+    }
 }
 
 #[derive(Debug, StructOpt)]
@@ -485,6 +490,10 @@ fn handle_run_subcommand(opt: &Opt, command: &RunCommand) -> Result<()> {
         RunCommand::Sled { dir } => {
             let kvs = track!(kvs::SledTree::new(dir))?;
             track!(execute(kvs, workload))?;
+        }
+        RunCommand::Crisper { endpoint } => {
+            // TODO: Run Crisper client
+            ()
         }
     }
     Ok(())
