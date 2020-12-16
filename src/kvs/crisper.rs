@@ -8,7 +8,7 @@ use std::str;
 use trackable::error::Failed;
 
 
-struct CrisperKVSClient {
+pub struct CrisperKVSClient {
     client_id: usize,
     rid: u64, 
     request_pusher: zmq::Socket,
@@ -30,9 +30,13 @@ impl CrisperKVSClient {
             response_puller: puller,
         })
     }
+}
+
+impl KeyValueStore for CrisperKVSClient {
+    type OwnedValue = Vec<u8>;
 
     fn put(&mut self, key: &[u8], value: &[u8]) -> Result<Existence> {
-        let key_str = str::from_utf8(key).unwrap().to_string();
+        let key_str = format!("{}:{}", self.client_id, str::from_utf8(key).unwrap().to_string());
         let val: LwwValue = LwwValue {
             timestamp: self.rid,
             value: value.to_vec(),
@@ -50,7 +54,7 @@ impl CrisperKVSClient {
         let req = KeyRequest {
             r#type: 2, // Put request
             tuples: vec![tup],
-            response_address: String::from("tcp://localhost:7777"),
+            response_address: self.response_puller.get_last_endpoint().unwrap().unwrap(),
             request_id: self.rid.to_string(),
         };
         self.rid += 1;
@@ -60,13 +64,13 @@ impl CrisperKVSClient {
         req.encode(&mut buf).unwrap();
         self.request_pusher.send(buf, 0).unwrap();
 
-        let resp = self.response_puller.recv_bytes(0).unwrap();
-        let key_resp: KeyResponse = Message::decode(resp.as_slice()).unwrap();
+        //let resp = self.response_puller.recv_bytes(0).unwrap();
+        //let key_resp: KeyResponse = Message::decode(resp.as_slice()).unwrap();
         Ok(Existence::new(true))
     }
 
     fn get(&mut self, key: &[u8]) -> Result<Option<Vec<u8>>> {
-        let key_str = str::from_utf8(key).unwrap().to_string();
+        let key_str = format!("{}:{}", self.client_id, str::from_utf8(key).unwrap().to_string());
         let tup = KeyTuple {
             key: key_str,
             lattice_type: 1, // LWW lattice_type
@@ -78,7 +82,7 @@ impl CrisperKVSClient {
         let req = KeyRequest {
             r#type: 1, // Get request
             tuples: vec![tup],
-            response_address: String::from("tcp://localhost:7777"),
+            response_address: self.response_puller.get_last_endpoint().unwrap().unwrap(),
             request_id: self.rid.to_string(),
         };
         self.rid += 1;
@@ -131,7 +135,6 @@ impl CrisperClientPool {
                 _ => ()
             };
         }
-        println!("Created {} clients...", clients.len());
         Ok(CrisperClientPool {
             num_clients: clients.len(),
             clients: clients,

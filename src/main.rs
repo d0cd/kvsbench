@@ -89,6 +89,12 @@ enum RunCommand {
 
     #[structopt(name = "crisper", about = "Crisper")]
     Crisper {
+        id: usize,
+        endpoint: String,
+        bind_addr: String,
+    },
+    #[structopt(name = "crisper-pool", about = "CrisperPool")]
+    CrisperPool {
         num_clients: usize,
         endpoint: String,
     }
@@ -491,8 +497,13 @@ fn handle_run_subcommand(opt: &Opt, command: &RunCommand) -> Result<()> {
         RunCommand::Sled { dir } => {
             let kvs = track!(kvs::SledTree::new(dir))?;
             track!(execute(kvs, workload))?;
+        },
+        RunCommand::Crisper { id, endpoint, bind_addr } => {
+            let context = zmq::Context::new();
+            let kvs = track!(kvs::CrisperKVSClient::new(*id, &context, endpoint.as_str(), bind_addr.as_str()))?;
+            track!(execute(kvs, workload))?;
         }
-        RunCommand::Crisper { num_clients, endpoint } => {
+        RunCommand::CrisperPool { num_clients, endpoint } => {
             let kvs = track!(kvs::CrisperClientPool::new(*num_clients, endpoint))?;
             track!(execute(kvs, workload))?;
         }

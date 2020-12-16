@@ -10,6 +10,12 @@ keywords = ["benchmark", "embedded-database"]
 license = "MIT"
 edition = "2018"
 
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
+
 [dependencies]
 byte-unit = "1"
 cannyls = "0.9"
