@@ -7,7 +7,7 @@ pub use self::cannyls::{CannyLsDevice, CannyLsOptions, CannyLsStorage};
 pub use self::fs::FileSystemKvs;
 pub use self::rocksdb::RocksDb;
 pub use self::sled::SledTree;
-pub use self::crisper::CrisperKVSClient;
+pub use self::crisper::CrisperClientPool;
 
 mod cannyls;
 mod fs;

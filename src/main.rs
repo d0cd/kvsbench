@@ -89,6 +89,7 @@ enum RunCommand {
 
     #[structopt(name = "crisper", about = "Crisper")]
     Crisper {
+        num_clients: usize,
         endpoint: String,
     }
 }
@@ -491,8 +492,8 @@ fn handle_run_subcommand(opt: &Opt, command: &RunCommand) -> Result<()> {
             let kvs = track!(kvs::SledTree::new(dir))?;
             track!(execute(kvs, workload))?;
         }
-        RunCommand::Crisper { endpoint } => {
-            let kvs = track!(kvs::CrisperKVSClient::new(endpoint))?;
+        RunCommand::Crisper { num_clients, endpoint } => {
+            let kvs = track!(kvs::CrisperClientPool::new(*num_clients, endpoint))?;
             track!(execute(kvs, workload))?;
         }
     }

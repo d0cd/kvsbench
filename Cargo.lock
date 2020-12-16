@@ -329,6 +329,7 @@ dependencies = [
  "bytes 0.6.0",
  "prost",
  "prost-build",
+ "serde",
  "spinach",
  "structopt 0.3.21",
  "timely",
@@ -1441,6 +1442,9 @@ checksum = "c4488ae950c49d403731982257768f48fada354a5203fe81f9bb6f43ca9002be"
 [[package]]
 name = "spinach"
 version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "splay_tree"
@@ -1625,6 +1629,7 @@ checksum = "fcc4b4cb3a970337237e3e00807d54904ac9693106dcb45e395ab01b9093a30c"
 dependencies = [
  "abomonation",
  "abomonation_derive",
+ "bincode",
  "getopts",
  "serde",
  "serde_derive",
